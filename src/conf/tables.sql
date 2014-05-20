@@ -4,10 +4,13 @@ drop table Account;
 drop table Person;
 drop table Postal;
 
+drop sequence account_sequence restrict;
 drop sequence transfer_sequence restrict;
+
 
 ----------------------------------------------------------
 create sequence transfer_sequence as int start with 100 increment by 1;
+create sequence account_sequence as int start with 10001000 increment by 1;
 
 create table Postal (
 code varchar(4) primary key,
@@ -29,19 +32,24 @@ password varchar(50) not null
 create table Account(
 cpr varchar(11) references Person(cpr),
 dtype varchar(32), 
-accountNumber varchar(9) primary key,
-balance float(20) not null,
-interest float(10) not null
+accountNumber varchar(40) primary key,
+balance decimal(20,2) not null,
+interest decimal(4,2) not null
 );
 
 create table CheckingAccount(
-accountNumber varchar(9) primary key references Account(accountNumber) 
+accountNumber varchar(40) primary key references Account(accountNumber) 
 );
 
 create table Transfer(
-id int primary key,
-amount float(20) not null,
-source varchar(9) references Account(accountNumber),
-target varchar(9) references Account(accountNumber),
+id varchar(20) primary key,
+amount decimal(20,2) not null,
+source varchar(40) references Account(accountNumber),
+target varchar(40) references Account(accountNumber),
 date date
 );
+
+-- create table owned_accounts(
+-- cpr varchar referemces person(cpr),
+-- accountnumber varchar references accont(accountnumber)
+-- slet cpr fra account

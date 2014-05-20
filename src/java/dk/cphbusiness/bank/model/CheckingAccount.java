@@ -21,16 +21,6 @@ import javax.persistence.Table;
     @NamedQuery(name = "CheckingAccount.findAll", query = "SELECT c FROM CheckingAccount c")})
 public class CheckingAccount extends Account {
     private static final long serialVersionUID = 1L;
-//    @Id
-//    @Basic(optional = false)
-//    @NotNull
-//    @Size(min = 1, max = 9)
-//    @Column(name = "ACCOUNTNUMBER")
-//    private String accountnumber;
-//    
-//    @JoinColumn(name = "ACCOUNTNUMBER", referencedColumnName = "ACCOUNTNUMBER", insertable = false, updatable = false)
-//    @OneToOne(optional = false)
-//    private Account account;
 
     public CheckingAccount() {
     }
@@ -38,11 +28,6 @@ public class CheckingAccount extends Account {
     public CheckingAccount(String accountnumber) {
         super(accountnumber);
     }
-    
-    public CheckingAccount(String accountnumber, Double interest, Person person){
-        super(accountnumber, interest, person);
-    }
-
 
     @Override
     public String toString() {

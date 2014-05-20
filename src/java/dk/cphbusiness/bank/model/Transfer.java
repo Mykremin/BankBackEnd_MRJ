@@ -7,6 +7,7 @@
 package dk.cphbusiness.bank.model;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -23,6 +24,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  *
@@ -39,13 +41,14 @@ public class Transfer implements Serializable {
     @GeneratedValue(generator = "TRANSFERSEQ", strategy = GenerationType.SEQUENCE)
     @Basic(optional = false)
     @NotNull
+    @Size(min = 1, max = 20)
     @Column(name = "ID")
-    private Integer id;
+    private String id;
     
     @Basic(optional = false)
     @NotNull
     @Column(name = "AMOUNT")
-    private double amount;
+    private BigDecimal amount;
     
     @Column(name = "DATE")
     @Temporal(TemporalType.DATE)
@@ -62,31 +65,45 @@ public class Transfer implements Serializable {
     public Transfer() {
     }
 
-    public Transfer(Integer id) {
+    public Transfer(String id) {
         this.id = id;
     }
 
-    public Transfer(Double amount, Account source, Account target) {
+    public Transfer(BigDecimal amount, Account source, Account target) {
      this.amount = amount;
-     this.date = new Date();
      this.source = source;
      this.target = target;
      
     }
 
-    public Integer getId() {
+    public Transfer(String id, BigDecimal amount, Account source, Account target) {
+        this.id = id;
+        this.amount = amount;
+        this.source = source;
+        this.target = target;
+    }
+
+    public Transfer(String id, BigDecimal amount, Date date) {
+        this.id = id;
+        this.amount = amount;
+        this.date = date;
+    }
+    
+    
+
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 
-    public double getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
-    public void setAmount(double amount) {
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
 

@@ -7,11 +7,14 @@
 package dk.cphbusiness.bank.model;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Collection;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
@@ -21,6 +24,7 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -32,30 +36,29 @@ import javax.validation.constraints.Size;
 @Entity
 @Inheritance (strategy = InheritanceType.JOINED)
 @Table(name = "ACCOUNT")
+@SequenceGenerator(name = "ACCOUNTSEQ", sequenceName = "account_sequence")
 @NamedQueries({
     @NamedQuery(name = "Account.findAll", query = "SELECT a FROM Account a")})
-public class Account implements Serializable {
+public abstract class Account implements Serializable {
     private static final long serialVersionUID = 1L;
-    @Size(max = 32)
-    @Column(name = "DTYPE")
-    private String dtype;
     
     @Id
+    @GeneratedValue(generator = "ACCOUNTSEQ", strategy = GenerationType.SEQUENCE)
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 9)
+    @Size(min = 1, max = 40)
     @Column(name = "ACCOUNTNUMBER")
     private String accountNumber;
     
     @Basic(optional = false)
     @NotNull
     @Column(name = "BALANCE")
-    private double balance;
+    private BigDecimal balance;
     
     @Basic(optional = false)
     @NotNull
     @Column(name = "INTEREST")
-    private double interest;
+    private BigDecimal interest;
     
     @OneToMany(mappedBy = "source")
     private Collection<Transfer> outgoing;
@@ -66,6 +69,10 @@ public class Account implements Serializable {
     @JoinColumn(name = "CPR", referencedColumnName = "CPR")
     @ManyToOne
     private Person cpr;
+    
+    public static Collection<Account> list(Person customer){
+        return customer.getAccounts();
+    }
 
     public Account() {
     }
@@ -74,10 +81,10 @@ public class Account implements Serializable {
         this.accountNumber = accountNumber;
     }
 
-    public Account(String accountNumber, double interest, Person cpr) {
+    public Account(String accountNumber, BigDecimal interest, BigDecimal balance) {
         this.accountNumber = accountNumber;
         this.interest = interest;
-        this.cpr = cpr;
+        this.balance = balance;
     }
 
     
@@ -90,19 +97,19 @@ public class Account implements Serializable {
         this.accountNumber = accountNumber;
     }
 
-    public double getBalance() {
+    public BigDecimal getBalance() {
         return balance;
     }
 
-    public void setBalance(double balance) {
+    public void setBalance(BigDecimal balance) {
         this.balance = balance;
     }
 
-    public double getInterest() {
+    public BigDecimal getInterest() {
         return interest;
     }
 
-    public void setInterest(double interest) {
+    public void setInterest(BigDecimal interest) {
         this.interest = interest;
     }
     

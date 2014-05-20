@@ -17,19 +17,18 @@ insert into PERSON(CPR,TITLE,FIRSTNAME,LASTNAME,STREET,CODE,PHONE,EMAIL,PASSWORD
 ('030287-3114', 'Mrs.', 'Sonja', 'Andersen', 'Vejlebrovej 24C', '2635', '24120618', 'Sonja@gmail.dk', '12341234');
 
 insert into ACCOUNT(CPR,DTYPE,ACCOUNTNUMBER,BALANCE,INTEREST) values
-('040493-2543', 'Checking account', '4571-1002', 1000, 0.5),
-('090690-3159', 'Checking account', '4571-1003', 1500, 0.5),
-('030287-3114', 'Checking account', '4571-1004', 2000, 0.5);
+('040493-2543', 'Checking account', '7860-1002', 1000, 0.5),
+('090690-3159', 'Checking account', '7860-1003', 1500, 0.5),
+('030287-3114', 'Checking account', '7860-' || char(next value for account_sequence) , 2000, 0.5);
 
 insert into CHECKINGACCOUNT(ACCOUNTNUMBER) values
-('4571-1002'),
-('4571-1003'),
-('4571-1004');
+('7860-1002'),
+('7860-1003');
 
 insert into TRANSFER(ID,AMOUNT,"SOURCE",TARGET,"DATE") values
-(02, 300, '4571-1002', '4571-1003', '2014-11-20'),
-(03, 300, '4571-1003', '4571-1004', '2014-04-04'),
-(04, 300, '4571-1004', '4571-1002', '2014-01-13');
+('100', 300, '7860-1002', '7860-1003', '2014-11-20'),
+('101', 300, '7860-1003', '7860-1002', '2014-04-04');
+
 
 
 

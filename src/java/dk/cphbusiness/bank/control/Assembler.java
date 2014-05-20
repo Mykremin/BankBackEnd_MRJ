@@ -12,6 +12,7 @@ import dk.cphbusiness.bank.contract.dto.CustomerDetail;
 import dk.cphbusiness.bank.contract.dto.CustomerSummary;
 import dk.cphbusiness.bank.contract.dto.TransferSummary;
 import dk.cphbusiness.bank.model.Account;
+import dk.cphbusiness.bank.model.CheckingAccount;
 import dk.cphbusiness.bank.model.Person;
 import dk.cphbusiness.bank.model.Postal;
 import dk.cphbusiness.bank.model.Transfer;
@@ -50,7 +51,7 @@ public class Assembler {
     
 
     public static AccountSummary createAccountSummary(Account account) {
-        return new AccountSummary(account.getAccountNumber(), "Checking Account", new BigDecimal(account.getBalance()));
+        return new AccountSummary(account.getAccountNumber(), "Checking Account", account.getBalance());
     }
 
     public static Collection<AccountSummary> createAccountSummaries(Collection<Account> accounts) {
@@ -74,7 +75,7 @@ public class Assembler {
         for (Transfer transfer : transfers) {
             transferSummaries.add(createTransferSummary(account, transfer));
         }
-        return new CheckingAccountDetail(account.getAccountNumber(), new BigDecimal(account.getInterest()), transferSummaries);
+        return new CheckingAccountDetail(account.getAccountNumber(), account.getInterest(), transferSummaries);
 
     }
 
@@ -103,16 +104,20 @@ public class Assembler {
         if (transfer.getSource() == account) {
             return new TransferSummary(
                     transfer.getDate(),
-                    new BigDecimal(transfer.getAmount()).negate(),
+                    transfer.getAmount().negate(),
                     transfer.getTarget().getAccountNumber()
             );
         } else {
             return new TransferSummary(
                     transfer.getDate(),
-                    new BigDecimal(transfer.getAmount()),
+                    transfer.getAmount(),
                     transfer.getSource().getAccountNumber()
             );
         }
+    }
+    
+    public static CheckingAccount createCheckingAccountEntity(CheckingAccountDetail detail){
+        return new CheckingAccount(detail.getType());
     }
 
 }

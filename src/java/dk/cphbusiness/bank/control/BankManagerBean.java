@@ -10,6 +10,7 @@ import dk.cphbusiness.bank.contract.BankManager;
 import dk.cphbusiness.bank.contract.dto.AccountDetail;
 import dk.cphbusiness.bank.contract.dto.AccountIdentifier;
 import dk.cphbusiness.bank.contract.dto.AccountSummary;
+import dk.cphbusiness.bank.contract.dto.CheckingAccountDetail;
 import dk.cphbusiness.bank.contract.dto.CustomerDetail;
 import dk.cphbusiness.bank.contract.dto.CustomerIdentifier;
 import dk.cphbusiness.bank.contract.dto.CustomerSummary;
@@ -20,6 +21,7 @@ import dk.cphbusiness.bank.contract.eto.NoSuchCustomerException;
 import dk.cphbusiness.bank.contract.eto.TransferNotAcceptedException;
 import static dk.cphbusiness.bank.control.Assembler.createAccountDetail;
 import static dk.cphbusiness.bank.control.Assembler.createAccountSummaries;
+import static dk.cphbusiness.bank.control.Assembler.createCheckingAccountEntity;
 import static dk.cphbusiness.bank.control.Assembler.createCustomerSummaries;
 import static dk.cphbusiness.bank.control.Assembler.createCustomerDetail;
 import dk.cphbusiness.bank.model.Account;
@@ -30,6 +32,7 @@ import dk.cphbusiness.bank.model.Transfer;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -75,7 +78,10 @@ public class BankManagerBean implements BankManager {
     public AccountDetail transferAmount(BigDecimal amount, AccountIdentifier source, AccountIdentifier target) throws NoSuchAccountException, TransferNotAcceptedException, InsufficientFundsException {
       Account sourceAccount = em.find(Account.class, source.getNumber());
       Account targetAccount = em.find(Account.class, target.getNumber());
-      Transfer transfer = new Transfer(Double.parseDouble("" + amount), sourceAccount, targetAccount);
+      sourceAccount.setBalance(sourceAccount.getBalance().subtract(amount));
+      targetAccount.setBalance(targetAccount.getBalance().add(amount));
+      Transfer transfer = new Transfer(null, amount.negate(), sourceAccount, targetAccount);
+      transfer.setDate(new Date());
       em.persist(transfer);
       return createAccountDetail(sourceAccount);
     }
@@ -128,15 +134,20 @@ public class BankManagerBean implements BankManager {
 
     @Override
     public AccountDetail createAccount(CustomerIdentifier customerID, AccountDetail detail) throws NoSuchCustomerException, CustomerBannedException {
-        Account account = new Account();
+        //Account account = new Account();
         Person customer = em.find(Person.class, customerID.getCpr());
         
         if(customer == null){
             throw new NoSuchCustomerException(customerID);
         }
-        account = new CheckingAccount(account.getAccountNumber(), Double.parseDouble("" + account.getInterest()), customer);
-        return createAccountDetail(account);
-
+        if(detail instanceof CheckingAccountDetail){
+            CheckingAccount checkA = createCheckingAccountEntity((CheckingAccountDetail) detail);
+            em.persist(checkA);
+            customer.getAccounts().add(checkA);
+            em.persist(customer);
+            return createAccountDetail(checkA);
+        }
+        throw new RuntimeException("Account type is unknown");
     }
 
 

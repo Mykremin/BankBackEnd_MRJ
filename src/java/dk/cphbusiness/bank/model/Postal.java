@@ -43,7 +43,7 @@ public class Postal implements Serializable {
     @Column(name = "DISTRICT")
     private String district;
     
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "code")
+    @OneToMany(mappedBy = "code")
     private Collection<Person> personCollection;
 
     public Postal() {
